@@ -1,20 +1,38 @@
 import { Account, Client, Databases } from "node-appwrite";
-import {createMiddleware} from "hono/factory"
+import { createMiddleware } from "hono/factory";
 import { conf } from "@/config/conf";
-import { getCookie, setCookie } from "hono/cookie";
+import { getCookie } from "hono/cookie";
+import { Env } from "./types";
 
-export const middleware=createMiddleware(async(c,next)=>{
-    const client=new Client()
+export const appwriteAuth = createMiddleware<Env>(async (c, next) => {
+  const session = getCookie(c, "token");
+
+  if (!session) {
+    return c.json({ error: "Unauthorized: Missing session token" }, 401);
+  }
+
+  const client = new Client()
     .setEndpoint(conf.appwrite.endpoint)
     .setProject(conf.appwrite.projectId)
-    const session=getCookie(c,"token")
-    if(!session)
-    {
-        return c.json({"unauthorized":"user not found"})
-    }
+    .setSession(session);
 
-    client.setSession(session)
+  const account = new Account(client);
+  const databases = new Databases(client);
 
+  try {
+    const userDoc = await account.get();
     
+    c.set("appwriteClient", client);
+    c.set("account", account);
+    c.set("databases", databases);
+    c.set("user", {
+      $id: userDoc.$id,
+      name: userDoc.name,
+      email: userDoc.email,
+    });
 
-})
+    await next();
+  } catch (error) {
+    return c.json({ error: "Unauthorized: Invalid or expired session token" }, 401);
+  }
+});

@@ -15,10 +15,10 @@ export const conf = {
     projectId: required("APPWRITE_PROJECT_ID"),
     secretKey: required("APPWRITE_SECRET_KEY"),
     storageKey: required("APPWRITE_STROAGE_KEY"),
-    // collections: {
-    //   workspace: required("APPWRITE_WORKSPACE_COLLECTION"),
-    //   projects: required("APPWRITE_PROJECTS_COLLECTION"),
-    //   members: required("APPWRITE_MEMBERS_COLLECTION"),
-    // },
+    collections: {
+      workspace: required("APPWRITE_WORKSPACE_COLLECTION"),
+      projects: required("APPWRITE_PROJECTS_COLLECTION"),
+      members: required("APPWRITE_MEMBERS_COLLECTION"),
+    },
   },
 };
