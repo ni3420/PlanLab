@@ -5,6 +5,7 @@ export type Env = {
     appwriteClient: Client;
     account: Account;
     databases: Databases;
+    users:Users;
     user: {
       $id: string;
       name: string;

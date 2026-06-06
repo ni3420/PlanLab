@@ -1,4 +1,4 @@
-import { Account, Client, Databases } from "node-appwrite";
+import { Account, Client, Databases, Users } from "node-appwrite";
 import { createMiddleware } from "hono/factory";
 import { conf } from "@/config/conf";
 import { getCookie } from "hono/cookie";
@@ -16,8 +16,14 @@ export const appwriteAuth = createMiddleware<Env>(async (c, next) => {
     .setProject(conf.appwrite.projectId)
     .setSession(session);
 
+  const adminClient = new Client()
+    .setEndpoint(conf.appwrite.endpoint)
+    .setProject(conf.appwrite.projectId)
+    .setKey(conf.appwrite.secretKey); 
+
   const account = new Account(client);
   const databases = new Databases(client);
+  const users = new Users(adminClient); 
 
   try {
     const userDoc = await account.get();
@@ -25,6 +31,7 @@ export const appwriteAuth = createMiddleware<Env>(async (c, next) => {
     c.set("appwriteClient", client);
     c.set("account", account);
     c.set("databases", databases);
+    c.set("users", users); 
     c.set("user", {
       $id: userDoc.$id,
       name: userDoc.name,

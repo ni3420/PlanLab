@@ -1,7 +1,10 @@
 "use client"
+
+import ShowAllWorkspaceMembers from "@/features/workspace/components/ShowAllworkpaceMembers";
+
 const MembersPage = () => {
     return ( <>
-    <h1>member</h1>
+    <ShowAllWorkspaceMembers/>
     </> );
 }
  

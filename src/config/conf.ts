@@ -19,6 +19,7 @@ export const conf = {
       workspace: required("APPWRITE_WORKSPACE_COLLECTION"),
       projects: required("APPWRITE_PROJECTS_COLLECTION"),
       members: required("APPWRITE_MEMBERS_COLLECTION"),
+      tasks: required("APPWRITE_TASKS_COLLECTION"),
     },
   },
 };
