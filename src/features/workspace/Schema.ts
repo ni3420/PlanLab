@@ -10,5 +10,5 @@ export const updateWorkspaceSchema = z.object({
 
 export const inviteMemberSchema = z.object({
   email: z.string().email("Invalid email address"),
-  role: z.enum(["admin", "member"]),
+  role: z.enum(["ADMIN", "MEMBER"]),
 });

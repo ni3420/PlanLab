@@ -11,7 +11,6 @@ export default function SettingPage() {
   const params = useParams();
   const router = useRouter();
   const workspaceId = params.workspaceId as string;
-console.log(workspaceId)
   const { data: workspace, isLoading, error } = useGetWorkspace({ workspaceId });
 
   if (isLoading) {

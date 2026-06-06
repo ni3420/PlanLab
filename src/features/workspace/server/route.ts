@@ -1,12 +1,10 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { ID, Query, Role } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { conf } from "@/config/conf";
 import { appwriteAuth } from "@/appwrite/middleware";
-import { createWorkspaceSchema, updateWorkspaceSchema, inviteMemberSchema } from "../Schema";
+import { createWorkspaceSchema, updateWorkspaceSchema } from "../Schema";
 import { generateInviteCode } from "../genrate";
-
-
 
 const app = new Hono()
   .post("/", appwriteAuth, zValidator("json", createWorkspaceSchema), async (c) => {
@@ -39,7 +37,7 @@ const app = new Hono()
 
       return c.json({ success: true, data: workspace }, 201);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       throw err;
     }
   })
@@ -73,23 +71,24 @@ const app = new Hono()
     }
   })
 
-  .get("/:workspaceId", appwriteAuth, async (c) => {
+  .get("/:workspaceId/invite-info", appwriteAuth, async (c) => {
     try {
       const workspaceId = c.req.param("workspaceId");
       const user = c.get("user");
       const database = c.get("databases");
 
-      const member = await database.listDocuments(
+      const memberVerify = await database.listDocuments(
         conf.appwrite.databaseId,
         conf.appwrite.collections.members,
         [
           Query.equal("userId", user.$id),
-          Query.equal("workspaceId", workspaceId)
+          Query.equal("workspaceId", workspaceId),
+          Query.equal("role", "ADMIN")
         ]
       );
 
-      if (member.total === 0) {
-        return c.json({ error: "Unauthorized access to workspace" }, 403);
+      if (memberVerify.total === 0) {
+        return c.json({ error: "Access Denied: Administrative permissions required" }, 403);
       }
 
       const workspace = await database.getDocument(
@@ -97,6 +96,47 @@ const app = new Hono()
         conf.appwrite.collections.workspace,
         workspaceId
       );
+
+      return c.json({ 
+        success: true, 
+        data: { 
+          $id: workspace.$id, 
+          inviteCode: workspace.inviteCode 
+        } 
+      });
+    } catch (err) {
+      throw err;
+    }
+  })
+
+  .get("/:workspaceId", appwriteAuth, async (c) => {
+    try {
+      const workspaceId = c.req.param("workspaceId");
+      const queryInviteCode = c.req.query("inviteCode");
+      const user = c.get("user");
+      const database = c.get("databases");
+
+      const workspace = await database.getDocument(
+        conf.appwrite.databaseId,
+        conf.appwrite.collections.workspace,
+        workspaceId
+      );
+
+      if (queryInviteCode && workspace.inviteCode === queryInviteCode) {
+        return c.json({ success: true, data: workspace });
+      }
+
+      const member = await database.listDocuments(
+        conf.appwrite.databaseId,
+        conf.appwrite.collections.members,
+        [
+          Query.equal("workspaceId", workspaceId)
+        ]
+      );
+
+      if (member.total === 0) {
+        return c.json({ error: "Unauthorized access to workspace" }, 403);
+      }
 
       return c.json({ success: true, data: workspace });
     } catch (err) {
@@ -117,7 +157,7 @@ const app = new Hono()
         [
           Query.equal("userId", user.$id),
           Query.equal("workspaceId", workspaceId),
-          Query.equal("role", "admin")
+          Query.equal("role", "ADMIN")
         ]
       );
 
@@ -150,7 +190,7 @@ const app = new Hono()
         [
           Query.equal("userId", user.$id),
           Query.equal("workspaceId", workspaceId),
-          Query.equal("role", "admin")
+          Query.equal("role", "ADMIN")
         ]
       );
 
@@ -197,7 +237,7 @@ const app = new Hono()
         [
           Query.equal("userId", user.$id),
           Query.equal("workspaceId", workspaceId),
-          Query.equal("role", "admin")
+          Query.equal("role", "ADMIN")
         ]
       );
 
@@ -218,8 +258,9 @@ const app = new Hono()
     }
   })
 
-  .post("/join/:inviteCode", appwriteAuth, async (c) => {
+  .post("/:workspaceId/join/:inviteCode", appwriteAuth, async (c) => {
     try {
+      const workspaceId = c.req.param("workspaceId");
       const inviteCode = c.req.param("inviteCode");
       const user = c.get("user");
       const database = c.get("databases");
@@ -227,11 +268,14 @@ const app = new Hono()
       const workspaces = await database.listDocuments(
         conf.appwrite.databaseId,
         conf.appwrite.collections.workspace,
-        [Query.equal("inviteCode", inviteCode)]
+        [
+          Query.equal("$id", workspaceId),
+          Query.equal("inviteCode", inviteCode)
+        ]
       );
 
       if (workspaces.total === 0) {
-        return c.json({ error: "Invalid workspace invitation token" }, 404);
+        return c.json({ error: "Invalid workspace ID or invitation token" }, 404);
       }
 
       const targetWorkspace = workspaces.documents[0];
@@ -249,14 +293,14 @@ const app = new Hono()
         return c.json({ error: "You are already a member of this workspace" }, 400);
       }
 
-      const newMember = await database.createDocument(
+      await database.createDocument(
         conf.appwrite.databaseId,
         conf.appwrite.collections.members,
         ID.unique(),
         {
           userId: user.$id,
           workspaceId: targetWorkspace.$id,
-          role: "member",
+          role: "MEMBER",
         }
       );
 

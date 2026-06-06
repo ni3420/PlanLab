@@ -18,7 +18,7 @@ export default function InviteCard({ workspaceId, inviteCode }: InviteCardProps)
   const { mutate: resetInviteCode, isPending } = useResetInviteCode();
 
   const inviteUrl = typeof window !== "undefined" 
-    ? `${window.location.origin}/join/${inviteCode}`
+    ? `${window.location.origin}/workspace/${workspaceId}/join/${inviteCode}`
     : `/join/${inviteCode}`;
 
   const handleCopy = async () => {

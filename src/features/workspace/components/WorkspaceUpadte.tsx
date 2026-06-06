@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUpdateWorkspace } from "@/features/workspace/api/use-UpdateWorkapce";
 import { useDeleteWorkspace } from "@/features/workspace/api/use-DeleteWorkpace";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 type UpdateFormValues = z.infer<typeof updateWorkspaceSchema>;
 
 interface WorkspaceUpdateProps {

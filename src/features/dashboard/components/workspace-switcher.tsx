@@ -22,6 +22,7 @@ export function WorkspaceSwitcher({ onOpenModal }: WorkspaceSwitcherProps) {
   const params = useParams();
   const { data: workspaces, isLoading } = useGetWorkspaces();
 
+
   const activeWorkspaceId = params.workspaceId as string;
 
   useEffect(() => {
