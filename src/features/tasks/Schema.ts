@@ -19,6 +19,12 @@ export const createTaskSchema = z.object({
   description: z.string().trim().optional(),
 });
 
+export const getTasksQuerySchema = z.object({
+  status: z.string().trim().optional(),
+  assigneeId: z.string().trim().optional(),
+  search: z.string().trim().optional(),
+});
+
 export const updateTaskSchema = z.object({
   name: z.string().trim().min(1, "Task name must remain populated").optional(),
   status: TaskStatusEnum.optional(),
@@ -41,3 +47,18 @@ export const bulkUpdateTasksSchema = z.object({
     })
   ),
 });
+
+
+type TaskStatusType=z.infer<typeof TaskStatusEnum.type>
+
+export interface Task {
+  $id: string;
+  name: string;
+  status: TaskStatusType
+  workspaceId: string;
+  projectId: string;
+  assigneeId: string;
+  dueDate?: string;
+  description?: string;
+  position: number;
+}

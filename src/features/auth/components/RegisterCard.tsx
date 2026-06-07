@@ -47,7 +47,6 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     try {
-      console.log(data);
       mutate({json:data},{
         onSuccess:()=>{
           toast.success("create the account")

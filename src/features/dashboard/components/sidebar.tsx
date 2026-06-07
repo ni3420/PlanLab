@@ -19,6 +19,7 @@ import { CreateWorkspaceModal } from "@/features/workspace/components/creatework
 import { useGetProjects } from "@/features/projects/api/use-getAllprojects";
 import { Button } from "@/components/ui/button";
 import { CreateProjectModal } from "@/features/projects/components/creatprojectmodel"; // Ensure this matches your modal wrapper path
+import { useGetProject } from "@/features/projects/api/use-getproject";
 
 interface DashboardSidebarProps {
   className?: string;
@@ -33,10 +34,11 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
   
   const workspaceId = params.workspaceId as string;
   const { data: projects } = useGetProjects({ workspaceId });
+  // const {data:project}=useGetProject({projectId})
 
   const routes = workspaceId ? [
     { label: "Dashboard", icon: LayoutDashboard, href: `/workspace/${workspaceId}` },
-    { label: "Epics", icon: Layers, href: `/workspace/${workspaceId}/epics` },
+    // { label: "Epics", icon: Layers, href: `/workspace/${workspaceId}/epics` },
     { label: "Tasks", icon: CheckSquare, href: `/workspace/${workspaceId}/tasks` },
     { label: "Members", icon: Users, href: `/workspace/${workspaceId}/members` },
     { label: "Settings", icon: Settings, href: `/workspace/${workspaceId}/settings` },

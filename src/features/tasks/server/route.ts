@@ -33,7 +33,6 @@ const app = new Hono()
         [
           Query.equal("workspaceId", workspaceId),
           Query.equal("status", status),
-          Query.orderDesc("position"),
           Query.limit(1)
         ]
       );

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useCurrentUser = () => {
   return useQuery({
-    queryKey: ["current-user"],
+    queryKey: ["current"],
     queryFn: async () => {
       const response = await client.api.auth["current-user"].$get();
       
@@ -11,8 +11,13 @@ export const useCurrentUser = () => {
         return null;
       }
 
-      const { data } = await response.json();
-      return data;
+      const resData = await response.json();
+      
+      if ("data" in resData) {
+        return resData.data;
+      }
+      
+      return null;
     },
     staleTime: 1000 * 60 * 5,
     retry: false,

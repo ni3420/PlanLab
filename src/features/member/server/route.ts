@@ -11,32 +11,58 @@ const app = new Hono()
       const workspaceId = c.req.param("workspaceId");
       const user = c.get("user");
       const database = c.get("databases");
+      const users=c.get("users")
 
-      const currentMember = await database.listDocuments(
+      const currentMemberCheck = await database.listDocuments(
         conf.appwrite.databaseId,
         conf.appwrite.collections.members,
         [
-          Query.equal("workspaceId", workspaceId)
+          Query.equal("workspaceId", workspaceId),
+          Query.equal("userId", user.$id)
         ]
       );
 
-      if (currentMember.total === 0) {
+      if (currentMemberCheck.total === 0) {
         return c.json({ error: "Unauthorized access to workspace directory" }, 403);
       }
 
-      const members = await database.listDocuments(
+      const membersList = await database.listDocuments(
         conf.appwrite.databaseId,
         conf.appwrite.collections.members,
         [Query.equal("workspaceId", workspaceId)]
       );
 
-      return c.json({ success: true, data: members.documents });
+      const usersService =users
+
+      const formattedMembers = await Promise.all(
+        membersList.documents.map(async (member) => {
+          try {
+            const userAccount = await usersService.get(member.userId);
+            
+            return {
+              $id: member.$id,
+              userId: member.userId,
+              name: userAccount.name || member.name || "Unknown Crew",
+              email: userAccount.email || member.email || "No Email",
+              role: member.role,
+            };
+          } catch {
+            return {
+              $id: member.$id,
+              userId: member.userId,
+              name: member.name || "Unknown Crew",
+              email: member.email || "No Email",
+              role: member.role,
+            };
+          }
+        })
+      );
+
+      return c.json({ success: true, data: formattedMembers });
     } catch (err) {
       throw err;
     }
-  })
-
-  .patch(
+  }).patch(
     "/:workspaceId/:memberId", 
     appwriteAuth, 
     zValidator("json", updateMemberSchema), 

@@ -17,6 +17,7 @@ export default function ListProjects({ onOpenProjectModal }: ListProjectsProps) 
   const workspaceId = params.workspaceId as string;
 
   const { data: projects, isLoading } = useGetProjects({ workspaceId });
+  console.log(projects,"projects")
 
   if (isLoading) {
     return (

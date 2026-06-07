@@ -1,9 +1,8 @@
 "use client";
 
-import { Bell } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MobileSidebar } from "@/components/mobile-sidebar";
+import { ModeToggle } from "@/features/dashboard/components/toggle-button";
+import UserButton from "@/features/auth/components/userButton";
 
 export function DashboardNavbar() {
   return (
@@ -11,6 +10,7 @@ export function DashboardNavbar() {
       <div className="flex items-center gap-4">
         <MobileSidebar />
         
+        {/* Mobile Logo Brand */}
         <div className="flex lg:hidden items-center gap-2">
           <div className="h-6 w-6 rounded-md bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
             <span className="text-[10px] font-bold text-white dark:text-neutral-950">pL</span>
@@ -20,6 +20,7 @@ export function DashboardNavbar() {
           </span>
         </div>
         
+        {/* Desktop Context Path Breadcrumbs */}
         <div className="hidden lg:flex items-center gap-1.5 text-sm">
           <span className="text-neutral-400">Workspace</span>
           <span className="text-neutral-300 dark:text-neutral-700">/</span>
@@ -27,17 +28,10 @@ export function DashboardNavbar() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full relative">
-          <Bell className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
-          <span className="absolute top-2.5 right-2.5 h-1.5 w-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-        </Button>
-
-        <Avatar className="h-8 w-8 cursor-pointer border border-neutral-200 dark:border-neutral-800">
-          <AvatarFallback className="bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-            KU
-          </AvatarFallback>
-        </Avatar>
+      {/* Control Actions Frame */}
+      <div className="flex items-center gap-3">
+        <ModeToggle />
+        <UserButton />
       </div>
     </header>
   );

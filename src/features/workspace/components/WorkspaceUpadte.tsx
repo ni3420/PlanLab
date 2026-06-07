@@ -65,7 +65,7 @@ export default function WorkspaceUpdate({ initialData, onCancel }: WorkspaceUpda
         param: { workspaceId: initialData.$id },
         
       },{onSuccess:()=>{
-        router.push("/workspace")
+        router.replace("/workspace");
       }});
     }
   };

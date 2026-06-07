@@ -13,6 +13,7 @@ export const useCreateProject = () => {
     mutationFn: async ({ json }) => {
       const response = await client.api.projects.$post({ json });
       if (!response.ok) throw new Error("Failed to initialize project context");
+      console.log(response.json())
       return await response.json();
     },
     onSuccess: (res) => {
