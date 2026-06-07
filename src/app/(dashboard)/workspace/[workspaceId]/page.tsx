@@ -1,9 +1,11 @@
 "use client"
-const WorkSpacePage = () => {
+
+import WorkSpaceAnalytics from "@/features/dashboard/components/workpaceAnalytics";
+
+const WorkspacePage = () => {
     return ( <>
-    
-    
+    <WorkSpaceAnalytics/>
     </> );
 }
  
-export default WorkSpacePage;
+export default WorkspacePage;
